@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="test">
+	<!-- SELECT * FROM class c,student s WHERE c.c_id=s.class_id AND c_id=#{id} -->
+	<select id="getStudent" parameterType="int" resultMap="getClassesMap">
+
+		select *
+		from class c, teacher t,student s where c.teacher_id=t.t_id and
+		c.c_id=s.class_id and
+		c.c_id=#{id}
+
+	</select>
+
+	<resultMap type="com.steven.bean.Classes" id="getClassesMap">
+		<id property="id" column="c_id" />
+		<result property="name" column="c_name" />
+
+		<!-- 关联对象 一对一   javaType 返回的bean的类型 -->
+		<association property="teacher" javaType="com.steven.bean.Teacher">
+			<id property="id" column="t_id" />
+			<result property="name" column="t_name" />
+		</association>
+
+		<!--collection 集合元素ofType="Student" 一对多 -->
+		<collection property="list" ofType="com.steven.bean.Student">
+			<id property="id" column="s_id"></id>
+			<id property="name" column="s_name"></id>
+		</collection>
+
+	</resultMap>
+
+
+	<!-- 方式二： 嵌套查询：通过执行另外一个 SQL 映射语句来返回预期的复杂类型 SELECT * FROM class WHERE c_id=1; 
+		SELECT * FROM teacher WHERE t_id=1 //1 是上一个查询得到的 teacher_id 的值 -->
+
+
+	<select id="getClasses2" parameterType="int" resultMap="getClassesMap2">
+		SELECT *
+		FROM class WHERE c_id=#{id}
+	</select>
+	<select id="getTeacher2" parameterType="int" resultType="com.steven.bean.Teacher">
+		SELECT
+		t_id id, t_name name FROM teacher WHERE t_id=#{id}
+	</select>
+	<select id="getStudent2" parameterType="int" resultType="com.steven.bean.Student">
+		SELECT
+		s_id id, s_name name FROM student WHERE class_id=#{id}
+	</select>
+
+
+	<resultMap type="com.steven.bean.Classes" id="getClassesMap2">
+		<id property="id" column="c_id" />
+		<result property="name" column="c_name" />
+		
+		
+		<association property="teacher" column="teacher_id"
+			select="getTeacher2">
+		</association>
+		
+		
+		<collection property="list" column="c_id" select="getStudent2">
+		</collection>
+	</resultMap>
+
+</mapper>

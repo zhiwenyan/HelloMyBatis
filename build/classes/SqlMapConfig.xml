@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 开启二级缓存 -->
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	<!--别名 -->
+	<typeAliases>
+		<typeAlias alias="_User" type="com.steven.usermapper.User" />
+	</typeAliases>
+
+
+	<!-- 和Spring整合后environment配置都会被干掉 -->
+	<environments default="development">
+		<environment id="development">
+			<!-- 使用jdbc事务管理，目前由mybatis来管理 -->
+			<transactionManager type="JDBC" />
+			<!-- 数据库连接池，目前由mybatis来管理 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://192.168.0.179/Alan_Test" />
+				<property name="username" value="root" />
+				<property name="password" value="storm" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="Users.xml" />
+		<mapper resource="ClassesMapper.xml" />
+		<mapper resource="StudentMapper.xml" />
+		<mapper resource="DuserMapper.xml" />
+		<mapper resource="CuserMapper.xml" />
+		<mapper resource="User.xml" />
+
+
+		<mapper resource="com/setven/itemmapper/ItemsMapper.xml" />
+		<mapper resource="com/setven/itemmapper/OrderdetailMapper.xml" />
+		<mapper resource="com/setven/itemmapper/OrdersMapper.xml" />
+		<mapper resource="com/setven/itemmapper/UserMapper.xml" />
+		<!-- 批量加载mapper <package name="com.setven.itemmapper" /> 指定mapper接口的包名，mybatis自动扫描包下面所有的mapper接口进行加载 
+			遵循一些规范：需要将mapper接口类名和mapper.xml映射文件名称保持一致，且在一个目录中 这个规范的前提是：使用的是mapper代理的方法 -->
+	</mappers>
+
+</configuration>

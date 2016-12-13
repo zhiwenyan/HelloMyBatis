@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 根据班级 id 查询班级信息(带老师的信息) SELECT * FROM class c,teacher t WHERE c.teacher_id=t.t_id 
+	AND t_id=1 -->
+<mapper namespace="test">
+	<select id="getClasses" parameterType="int" resultMap="getClassMap">
+		SELECT *
+		FROM class c,teacher t WHERE c.teacher_id=t.t_id AND t_id=#{id}
+	</select>
+
+
+	<resultMap type="com.steven.bean.Classes" id="getClassMap">
+		<id property="id" column="c_id" />
+		<result property="name" column="c_name" />
+		<!-- 关联对象 -->
+		<association property="teacher" javaType="com.steven.bean.Teacher">
+			<id property="id" column="t_id" />
+			<result property="name" column="t_name" />
+		</association>
+	</resultMap>
+
+	<!-- 方式二： 嵌套查询：通过执行另外一个 SQL 映射语句来返回预期的复杂类型 SELECT * FROM class WHERE c_id=1; 
+		SELECT * FROM teacher WHERE t_id=1 //1 是上一个查询得到的 teacher_id 的值 -->
+	<select id="getClass2" parameterType="int" resultMap="ClassResultMap2">
+		select *
+		from class where c_id=#{id}
+	</select>
+
+	<select id="getTeacher" parameterType="int" resultType="com.steven.bean.Teacher">
+		SELECT
+		t_id id, t_name name FROM teacher WHERE t_id=#{id}
+	</select>
+
+	<resultMap type="com.steven.bean.Classes" id="ClassResultMap2">
+		<id property="id" column="c_id" />
+		<result property="name" column="c_name" />
+		<association property="teacher" column="teacher_id"
+			javaType="com.steven.bean.Teacher" select="getTeacher">
+		</association>
+	</resultMap>
+
+</mapper>

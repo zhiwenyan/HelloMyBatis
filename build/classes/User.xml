@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.steven.usermapper.UserMapper"> <!-- mapper接口的地址 -->
+
+	<select id="findUserById" parameterType="int" resultType="_User">
+		select
+		* from USERS where id = #{id}
+	</select>
+
+	<select id="findUserByName" parameterType="String" resultType="_User">
+		SELECT * from USERS where username LIKE '%${value}%'
+	</select>
+
+	<insert id="addUser" parameterType="_User">
+		INSERT INTO
+		USERS(username,password) VALUES(#{username},#{password})
+	</insert>
+
+	<delete id="deleteUser" parameterType="int">
+		DELETE FROM USERS WHERE
+		id=#{id}
+	</delete>
+	<update id="updateUser" parameterType="_User">
+		update USERS set
+		username=#{username},password=#{password} where id=#{id}
+	</update>
+	<!-- 输入映射 -->
+	<select id="findUserList" parameterType="com.steven.UserQueryVo.UserQueryVo"
+		resultType="_User">
+		select * from USERS where USERS.sex = #{user.sex} and
+		USERS.username like
+		'%${user.UserName}%'
+
+	</select>
+	
+	
+	
+	<!-- 动态的SQL -->
+	<sql id="query_user_where">
+		<if test="user!=null">
+			<if test="user.sex!=null and user.sex!=''">
+				and USERS.sex = #{user.sex}
+			</if>
+			<if test="user.UserName!=null and user.UserName!=''">
+				and USERS.username like '%${user.UserName}%'
+			</if>
+		</if>
+	</sql>
+
+	<select id="findUserListSQL" parameterType="com.steven.UserQueryVo.UserQueryVo"
+		resultType="_User">
+		select * from USERS
+		<where>
+			<!-- 引用sql片段的id，如果refid指定的id不在本mapper文件中，需要在前面加上namespace -->
+			<include refid="query_user_where"></include>
+			<!-- 还可以引用其他sql片段 -->
+		</where>
+	</select>
+</mapper>
